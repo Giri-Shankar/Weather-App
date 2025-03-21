@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div class="card">
+        <div class="search">
+            <input type="text" placeholder="Enter the city">
+            <button><img src="images/search.png"></button>
+        </div>
+        <div class="weather">
+            <div class="temp">
+                <img src="images/clear.png" class="weather-icon">
+                <h1>22°C</h1>
+                <h2>Bangalore</h2>
+            </div>
+            <div class="details">
+                <div class="humidity huwind">
+                    <img src="images/humidity.png" class="details-icon">
+                    <div class="data">
+                        <h1>50%</h1>
+                        <p>Humidity</p>
+                    </div>
+                </div>
+                <div class="wind-speed huwind">
+                    <img src="images/wind.png" class="details-icon">
+                    <div class="data">
+                        <h1>50 km/h</h1>
+                        <p>Wind Speed</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+
+        const apiKey = "db62ade5891b78967b9bb0ce6af40e61"
+        const apiUrl = "https://api.openweathermap.org/data/2.5/weather?"
+
+        let citySearch = document.querySelector('.search input')
+        let searchBtn = document.querySelector('.search button')
+        let tempValue = document.querySelector('.temp h1')
+        let tempCity = document.querySelector('.temp h2')
+        let humidityValue = document.querySelector('.humidity h1')
+        let windSpeedValue = document.querySelector('.wind-speed h1')
+        let statusImg = document.querySelector('.temp img')
+
+        async function checkWeather(city) {
+            const LatLogUrl = `https://api.openweathermap.org/geo/1.0/direct?q=${city}`
+            const response = await fetch(LatLogUrl + `&appid=${apiKey}`)
+            var data = await response.json()
+
+            let Latitude = await data[0].lat
+            let Longitude = await data[0].lon
+
+
+            const newResponse = await fetch(apiUrl + `lat=${Latitude}&lon=${Longitude}&appid=${apiKey}&units=metric`)
+
+            var newData = await newResponse.json()
+
+            if (newData.weather[0].main == 'Clear') {
+                statusImg.src = "images/clear.png"
+            }
+            else if (newData.weather[0].main == 'Clouds'){
+                statusImg.src = "images/clouds.png"
+            }
+            else if (newData.weather[0].main == 'Drizzle'){
+                statusImg.src = "images/drizzle.png"
+            }
+            else if (newData.weather[0].main == 'Mist'){
+                statusImg.src = "images/mist.png"
+            }
+            else if (newData.weather[0].main == 'Rain'){
+                statusImg.src = "images/rain.png"
+            }
+            else if (newData.weather[0].main == 'Snow'){
+                statusImg.src = "images/snow.png"
+            }
+
+            tempValue.innerHTML = Math.round(newData.main.temp) + "°C"
+            tempCity.innerHTML = newData.name
+            humidityValue.innerHTML = newData.main.humidity + "%"
+            windSpeedValue.innerHTML = newData.wind.speed + " km/h"
+        }
+
+
+        searchBtn.addEventListener('click', () => {
+            checkWeather(citySearch.value)
+        })
+
+    </script>
+</body>
+
+</html>
